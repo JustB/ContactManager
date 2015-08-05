@@ -25,7 +25,7 @@
 </div>
 
 <script type="text/template" id="contact-template">
-    <p><%- firstName %> <%- lastName %></p>
+    <%- firstName %> <%- lastName %>
 </script>
 
 
@@ -44,8 +44,13 @@
 
     ContactManager.Contact = Backbone.Model.extend({});
 
+    ContactManager.ContactCollection = Backbone.Collection.extend({
+        model: ContactManager.Contact
+    });
+
     ContactManager.ContactView = Marionette.ItemView.extend({
         template: '#contact-template',
+        tagName: 'li',
 
         events: {
             'click p': 'alertPhoneNumber'
@@ -56,18 +61,36 @@
         }
     });
 
+    ContactManager.ContactsView = Marionette.CollectionView.extend({
+        tagName: 'ul',
+        childView: ContactManager.ContactView
+    });
+
     ContactManager.on('start', function () {
 
-        var valeria = new ContactManager.Contact({
-            firstName: 'Valeria',
-            lastName: 'Marolda',
-            phoneNumber: '32566984458'
+        var contacts = new ContactManager.ContactCollection([
+            {
+                firstName: 'Bob',
+                lastName: 'Bobby',
+                phoneNumber: '123456789'
+            },
+            {
+                firstName: 'Coc',
+                lastName: 'Colly',
+                phoneNumber: '987654321'
+            },
+            {
+                firstName: 'Aaron',
+                lastName: 'Ally',
+                phoneNumber: '456987123'
+            }
+        ]);
+
+        var contactsListView = new ContactManager.ContactsView({
+            collection: contacts
         });
 
-        var valeriaView = new ContactManager.ContactView({
-            model: valeria
-        });
-        ContactManager.mainRegion.show(valeriaView);
+        ContactManager.mainRegion.show(contactsListView);
     });
 
     ContactManager.start();
